@@ -1,4 +1,3 @@
-from typing import final
 import shopping_list
 import address
 import grocery_item
