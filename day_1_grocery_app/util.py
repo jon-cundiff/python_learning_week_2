@@ -9,8 +9,8 @@ def gather_address_info():
 def gather_grocery_item_info(shopping_list_title):
     title = input(
         f"What item would you like to add to {shopping_list_title}? ")
-    price = input("How much does each cost? ")
-    quantity = input("How many do you need to buy? ")
+    price = int(input("How much does each cost? "))
+    quantity = int(input("How many do you need to buy? "))
     return (title, price, quantity)
 
 

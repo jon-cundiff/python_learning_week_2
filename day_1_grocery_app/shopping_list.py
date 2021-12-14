@@ -5,13 +5,15 @@ class ShoppingList:
         self.grocery_items = []
 
     def add_grocery_item(self, item):
+        for grocery_item in self.grocery_items:
+            if grocery_item.title == item.title:
+                print(f"Item {item.title} already on list!")
+                return
+
         self.grocery_items.append(item)
 
     def remove_grocery_item(self, item_to_remove):
-        if item_to_remove >= 0 and item_to_remove < len(self.grocery_items):
-            del self.grocery_items[item_to_remove]
-        else:
-            print("Invalid Index")
+        del self.grocery_items[item_to_remove]
 
     def convert_grocery_items_titles_to_CSV(self):
         grocery_item_titles = []
@@ -37,5 +39,5 @@ class ShoppingList:
             else:
                 message = "  +  " + self.convert_grocery_items_titles_to_CSV()
         else:
-            message = "  -- No Items -- "
+            message = "  -- No Items --"
         print(message)
