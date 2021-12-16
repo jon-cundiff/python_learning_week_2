@@ -58,6 +58,7 @@ class PoolTable:
             self.start_date_time = datetime.datetime.now()
 
     def check_out(self):
+        print(self.start_date_time)
         if self.is_occupied():
             end_date_time = datetime.datetime.now()
             self.create_entry(end_date_time)

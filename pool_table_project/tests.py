@@ -1,11 +1,17 @@
 import unittest
+import os
+from unittest.mock import patch
 import datetime
 from pool_table import PoolTable
 from entry import Entry
+import util
 
 
 class PoolTableTests(unittest.TestCase):
-    def setUp(self):
+
+    @patch.object(util, 'make_filename')
+    def setUp(self, mock_make_filename):
+        mock_make_filename.return_value = "test.json"
         self.pool_table = PoolTable(1)
 
     def test_pool_table_knows_if_occupied(self):
@@ -43,7 +49,9 @@ class PoolTableTests(unittest.TestCase):
         self.assertEqual(datetime.datetime(2021, 12, 1, 18, 0), self.pool_table.start_date_time,
                          "Pool table start date and time should not change")
 
-    def test_pool_table_can_be_checked_out(self):
+    @patch.object(util, 'make_filename')
+    def test_pool_table_can_be_checked_out(self, mock_make_filename):
+        mock_make_filename.return_value = "test.json"
         self.pool_table.start_date_time = datetime.datetime(2021, 12, 1, 18, 0)
         self.pool_table.check_out()
         self.assertEqual(None, self.pool_table.start_date_time,
@@ -52,8 +60,13 @@ class PoolTableTests(unittest.TestCase):
                          "Pool table entries list should increment by 1")
 
     def test_pool_table_cannot_be_checked_out_if_unoccupied(self):
+        print('cannot be checked out')
         self.pool_table.check_out()
         self.assertEqual(0, len(self.pool_table.entries))
+
+    def tearDown(self):
+        if os.path.isfile('./test.json'):
+            os.remove('./test.json')
 
 
 unittest.main()

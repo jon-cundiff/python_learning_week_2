@@ -32,8 +32,6 @@ def update_entries(pool_table_number, table_entries):
     entries[str(pool_table_number)] = table_entries
 
     filename = make_filename()
-    print(entries)
-    print(entries['6'])
     with open(filename, "w") as file:
         json.dump(entries, file, indent=4)
 
