@@ -1,4 +1,5 @@
 import datetime
+import util
 from entry import Entry
 
 
@@ -8,6 +9,15 @@ class PoolTable:
         self.start_date_time = None
         self.hourly_rate = 30
         self.entries = []
+
+        # import entries from same day if app is restarted and convert into Entry instances
+        raw_entries = util.get_entries(pool_table_number)
+        for raw_entry in raw_entries:
+            (pool_table_number, start_date_time, end_date_time,
+             total_time_played, cost) = util.dict_entry_to_class_fields(raw_entry)
+            entry = Entry(pool_table_number, start_date_time,
+                          end_date_time, total_time_played, cost)
+            self.entries.append(entry)
 
     def is_occupied(self):
         return self.start_date_time is not None
@@ -35,6 +45,12 @@ class PoolTable:
                           self.start_date_time, end_date_time, total_time_played, total_cost)
         self.entries.append(new_entry)
 
+        dict_entries = []
+        for entry in self.entries:
+            dict_entries.append(entry.export_as_dict())
+
+        util.update_entries(self.pool_table_number, dict_entries)
+
     def check_in(self):
         if self.is_occupied():
             print(f"Pool Table {self.pool_table_number} is currently occupied")
@@ -53,7 +69,8 @@ class PoolTable:
     def display_status(self):
         message = f"Pool Table {self.pool_table_number} - "
         if self.is_occupied():
-            start_time = self.start_date_time.strftime("%b %d %Y %H:%M:%S")
+            start_time = self.start_date_time.strftime(
+                util.get_dt_format_string())
             duration = self.get_total_time_played_string(
                 datetime.datetime.now())
             message += f"OCCUPIED since {start_time} - {duration}"

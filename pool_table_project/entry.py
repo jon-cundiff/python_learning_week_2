@@ -1,3 +1,6 @@
+import util
+
+
 class Entry:
     def __init__(self, pool_table_number, start_date_time, end_date_time, total_time_played, cost):
         self.pool_table_number = pool_table_number
@@ -9,8 +12,8 @@ class Entry:
     def export_as_dict(self):
         entry_dict = {
             "pool_table_number": self.pool_table_number,
-            "start_date_time": self.start_date_time,
-            "end_date_time": self.end_date_time,
+            "start_date_time": self.start_date_time.strftime(util.get_dt_format_string()),
+            "end_date_time": self.end_date_time.strftime(util.get_dt_format_string()),
             "total_time_played": self.total_time_played,
             "cost": self.cost
         }
