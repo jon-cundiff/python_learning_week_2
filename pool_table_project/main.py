@@ -17,13 +17,13 @@ while True:
         # check into table
         if choice == "1":
             table_number = util.get_pool_table_number_input(
-                "Which table is getting checked in to?", len(pool_tables))
-            pool_tables[table_number].check_in()
+                "Which table is getting checked out?", len(pool_tables))
+            pool_tables[table_number].check_out()
         # check out of table
         elif choice == "2":
             table_number = util.get_pool_table_number_input(
-                "Which table is getting checked out of?", len(pool_tables))
-            pool_tables[table_number].check_out()
+                "Which table is getting checked in?", len(pool_tables))
+            pool_tables[table_number].check_in()
         # detailed status of table
         elif choice == "3":
             table_number = util.get_pool_table_number_input(
@@ -43,13 +43,6 @@ while True:
                 pool_table.display_entries(True)
                 table_cost = pool_table.get_entries_cost()
                 cost += table_cost
-                divider = "***************************"
-                inner_text = f"Table {pool_table.pool_table_number} Total: ${table_cost:.2f}".center(
-                    len(divider) - 2)
-                print(divider)
-                print(
-                    f"\n{inner_text}\n")
-                print(divider + "\n\n")
 
             print("===========================")
             print(f"Total Cost: ${cost:.2f}\n")

@@ -24,8 +24,8 @@ def display_table_statuses(pool_tables):
 
 
 def display_commands():
-    print("\n1. Check-in to a pool table")
-    print("2. Check-out of a pool table")
+    print("\n1. Check out a pool table")
+    print("2. Check in a pool table")
     print("3. Get detailed status on pool table")
     print("4. Get pool table log")
     print("5. Get log for all tables")

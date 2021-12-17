@@ -70,21 +70,21 @@ class PoolTable:
 
         util.update_entries(self.pool_table_number, dict_entries)
 
-    def check_in(self):
+    def check_out(self):
         if self.is_occupied():
             util.display_error(
                 f"Pool Table {self.pool_table_number} is currently occupied")
         else:
             self.start_date_time = datetime.datetime.now()
 
-    def check_out(self):
+    def check_in(self):
         if self.is_occupied():
             end_date_time = datetime.datetime.now()
             self.create_entry(end_date_time)
             self.start_date_time = None
         else:
             util.display_error(
-                f"No one to check out at Pool Table {self.pool_table_number}")
+                f"Pool Table {self.pool_table_number} is not occupied")
 
     def display_status(self):
         number_string = str(self.pool_table_number).rjust(2)
@@ -124,7 +124,7 @@ class PoolTable:
         print("\n" + divider + '\n')
         input('Press any key to continue...')
 
-    def display_entries(self, skip_confirm):
+    def display_entries(self, skip_confirm=False):
         divider = "++++++++++++++++++++++++++++++++++++++++"
         today = datetime.date.today().strftime(f'%m-%d-%Y')
         inner_text = f"Pool Table {self.pool_table_number} Log: {today}"
@@ -145,6 +145,15 @@ class PoolTable:
                 print(divider + '\n')
         else:
             print("  No entries\n")
+
+        divider = "***************************"
+        inner_text = f"Table {self.pool_table_number} Total: ${self.get_entries_cost():.2f}".center(
+            len(divider) - 2)
+        print(divider)
+        print(
+            f"\n{inner_text}\n")
+        print(divider + "\n\n")
+
         if skip_confirm:
             return
 
