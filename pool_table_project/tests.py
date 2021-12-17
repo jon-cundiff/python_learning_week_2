@@ -26,11 +26,12 @@ class PoolTableTests(unittest.TestCase):
         self.pool_table.start_date_time = datetime.datetime(2021, 12, 1, 18, 0)
         end_date_time = datetime.datetime(2021, 12, 1, 18, 30)
         duration = self.pool_table.get_total_time_played_string(end_date_time)
-        self.assertEqual("0:30", duration, "Should be 30 minutes")
+        self.assertEqual("30 minutes", duration, "Should be 30 minutes")
 
         end_date_time = datetime.datetime(2021, 12, 1, 19, 30)
         duration = self.pool_table.get_total_time_played_string(end_date_time)
-        self.assertEqual("1:30", duration, "Should be 1 hour 30 minutes")
+        self.assertEqual("1 hour 30 minutes", duration,
+                         "Should be 1 hour 30 minutes")
 
     def test_pool_table_can_calculate_cost(self):
         play_time = 30
@@ -43,12 +44,15 @@ class PoolTableTests(unittest.TestCase):
         self.assertNotEqual(None, self.pool_table.start_date_time,
                             "Pool table should have start date and time")
 
-    def test_pool_table_should__not_check_in_if_occupied(self):
+    # bypasses input to clear error
+    @patch.object(util, 'display_error')
+    def test_pool_table_should__not_check_in_if_occupied(self, mock_display_error):
         self.pool_table.start_date_time = datetime.datetime(2021, 12, 1, 18, 0)
         self.pool_table.check_in()
         self.assertEqual(datetime.datetime(2021, 12, 1, 18, 0), self.pool_table.start_date_time,
                          "Pool table start date and time should not change")
 
+    # allows control of filename rather than date based
     @patch.object(util, 'make_filename')
     def test_pool_table_can_be_checked_out(self, mock_make_filename):
         mock_make_filename.return_value = "test.json"
@@ -59,8 +63,9 @@ class PoolTableTests(unittest.TestCase):
         self.assertEqual(1, len(self.pool_table.entries),
                          "Pool table entries list should increment by 1")
 
-    def test_pool_table_cannot_be_checked_out_if_unoccupied(self):
-        print('cannot be checked out')
+    # bypasses input to clear error
+    @patch.object(util, 'display_error')
+    def test_pool_table_cannot_be_checked_out_if_unoccupied(self, mock_display_error):
         self.pool_table.check_out()
         self.assertEqual(0, len(self.pool_table.entries))
 

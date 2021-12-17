@@ -29,11 +29,30 @@ class PoolTable:
         # return in minutes without extra seconds
         return int(total_seconds / 60)
 
-    def get_total_time_played_string(self, end_date_time):
-        total_minutes = self.get_total_time_played(end_date_time)
-        total_hours = int(total_minutes / 60)
-        remaining_minutes = total_minutes % 60
-        return f"{total_hours}:{remaining_minutes:02d}"
+    def get_total_time_played_string(self, end_date_time=None, play_time=None):
+        total_minutes = 0
+        if play_time:
+            total_minutes = play_time
+        elif end_date_time:
+            total_minutes = self.get_total_time_played(end_date_time)
+        hours = {
+            "num": int(total_minutes / 60),
+            "label": "hours"
+        }
+
+        minutes = {
+            "num": total_minutes % 60,
+            "label": "minutes"
+        }
+
+        # converts hours to hour and/or minutes to minute if 1
+        for unit in [hours, minutes]:
+            if unit["num"] == 1:
+                unit["label"] = unit["label"][0:-1]
+        message = ""
+        if hours["num"] > 0:
+            message += f"{hours['num']} {hours['label']} "
+        return message + f"{minutes['num']} {minutes['label']}"
 
     def get_total_cost(self, play_time):
         return round(play_time / 60 * self.hourly_rate, 2)
@@ -53,22 +72,23 @@ class PoolTable:
 
     def check_in(self):
         if self.is_occupied():
-            print(f"Pool Table {self.pool_table_number} is currently occupied")
+            util.display_error(
+                f"Pool Table {self.pool_table_number} is currently occupied")
         else:
             self.start_date_time = datetime.datetime.now()
 
     def check_out(self):
-        print(self.start_date_time)
         if self.is_occupied():
             end_date_time = datetime.datetime.now()
             self.create_entry(end_date_time)
             self.start_date_time = None
         else:
-            print(
+            util.display_error(
                 f"No one to check out at Pool Table {self.pool_table_number}")
 
     def display_status(self):
-        message = f"Pool Table {self.pool_table_number} - "
+        number_string = str(self.pool_table_number).rjust(2)
+        message = f"  Pool Table {number_string} - "
         if self.is_occupied():
             start_time = self.start_date_time.strftime(
                 util.get_dt_format_string())
@@ -78,3 +98,60 @@ class PoolTable:
         else:
             message += "UNOCCUPIED"
         print(message)
+
+    def display_header(self, inner_text, divider):
+        print(divider)
+        print(f"+{inner_text.center(len(divider) - 2)}+")
+        print(divider + "\n")
+
+    def display_details(self):
+        divider = "++++++++++++++++++++++++++++++++++++++++"
+        inner_text = f"Pool Table {self.pool_table_number}"
+        self.display_header(inner_text, divider)
+
+        if self.is_occupied():
+            start_time = self.start_date_time.strftime(
+                util.get_dt_format_string())
+            now = datetime.datetime.now()
+            duration = self.get_total_time_played_string(now)
+            cost = self.get_total_cost(self.get_total_time_played(now))
+            print(f"  OCCUPIED since {start_time}")
+            print(f"  Duration: {duration}")
+            print(f"  Current Cost: ${cost}")
+        else:
+            print("Currently UNOCCUPIED")
+
+        print("\n" + divider + '\n')
+        input('Press any key to continue...')
+
+    def display_entries(self, skip_confirm):
+        divider = "++++++++++++++++++++++++++++++++++++++++"
+        today = datetime.date.today().strftime(f'%m-%d-%Y')
+        inner_text = f"Pool Table {self.pool_table_number} Log: {today}"
+        self.display_header(inner_text, divider)
+
+        date_format = util.get_dt_format_string()
+        if len(self.entries) > 0:
+            for entry in self.entries:
+                play_time = self.get_total_time_played_string(
+                    play_time=entry.total_time_played)
+                print(f"  Pool Table: {entry.pool_table_number}")
+                print(
+                    f"  Start Time: {entry.start_date_time.strftime(date_format)}")
+                print(
+                    f"  End Time: {entry.end_date_time.strftime(date_format)}")
+                print(f"  Play Time: {play_time}")
+                print(f"  Cost: ${entry.cost:.2f}\n")
+                print(divider + '\n')
+        else:
+            print("  No entries\n")
+        if skip_confirm:
+            return
+
+        input('Press any key to continue...')
+
+    def get_entries_cost(self):
+        cost = 0.00
+        for entry in self.entries:
+            cost += entry.cost
+        return cost
